@@ -76,6 +76,14 @@ You do not need to do all three. Two methods is enough.
 
 Re-run the same tests after unlearning.
 
+Use **MUSE** ([Shi et al., 2024](https://arxiv.org/abs/2407.06460)) as the evaluation baseline — it covers six dimensions: verbatim memorisation, knowledge memorisation, privacy leakage, utility preservation, scalability, and sustainability.
+
+On top of MUSE, add **one or two targeted extensions**:
+
+- **Cross-version leakage check** *(fastest to implement)*: compare log-probabilities or extraction scores on forget-set prompts before and after unlearning. If the model shifts visibly differently from holdout examples, it leaks that the data was once present — a realistic threat MUSE's single-snapshot MIA misses. Reuses existing checkpoints and prompts with a small comparison script. ([MUSE paper, §Privacy Leakage](https://arxiv.org/abs/2407.06460))
+
+- **Mixed-query leakage test**: build prompts that blend retained context with a forgotten private attribute and measure how often the forgotten detail is still recoverable. Better reflects real GDPR-style requests where forget/retain sets are not cleanly separated. ([MUSE paper, §Evaluation Design](https://arxiv.org/abs/2407.06460))
+
 Compare:
 
 - Canary extraction rate.  
@@ -97,8 +105,9 @@ Your write-up should answer:
 - Which method was the simplest and which was most effective?  
     
 - What are the failure modes?
+- **Key observation to watch for**: does a method pass MUSE privacy metrics but still show cross-version or mixed-query leakage? That gap is the interesting finding.
 
 ### Decision log
 
 - 2026-06-30: Project created
--
+- 2026-06-30: Added MUSE as evaluation baseline + two targeted extensions (cross-version leakage, mixed-query leakage)

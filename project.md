@@ -1,16 +1,3 @@
----
-type: project
-project_name: Unlearning personal data
-status: idea
-start_date: 2026-06-30
-end_date: 2016-07-12
-source_vault:
-project_link:
-area:
-tags:
-  - career_break/project
----
-
 ## Unlearning personal data
 
 ### Idea in one sentence
@@ -32,7 +19,7 @@ Can a small language model be made less likely to reproduce sensitive strings, w
 	- a clean GitHub repo
 	- one short write-up with plots
 	- one notebook or script for training/eval
-	- a 1-minute explanation of what safety question you tested and what you found.github+1
+	- a 1-minute explanation of what safety question you tested and what you found
 - Out of scope:
 	- Complex mechanistic interpretability techniques
 

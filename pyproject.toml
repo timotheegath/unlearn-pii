@@ -1,0 +1,45 @@
+[project]
+name = "unlearn-pii"
+version = "0.1.0"
+description = "Evaluating unlearning techniques for personal data in small language models"
+requires-python = ">=3.11"
+
+dependencies = [
+    # Core model + tokenization
+    "transformers>=4.40.0",
+    "tokenizers>=0.19.0",
+
+    # Dataset handling
+    "datasets>=2.19.0",
+
+    # Training
+    "torch>=2.2.0",
+    "accelerate>=0.29.0",
+
+    # Evaluation
+    "evaluate>=0.4.0",
+    "scikit-learn>=1.4.0",   # for MIA classifiers
+    "numpy>=1.26.0",
+
+    # Optional: LoRA for reversible edits
+    "peft>=0.10.0",
+
+    # Utilities
+    "tqdm>=4.66.0",
+    "matplotlib>=3.8.0",     # for plots in write-up
+    "pandas>=2.2.0",
+    "jupyter>=1.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "ruff>=0.4.0",
+    "ipykernel>=6.29.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.ruff]
+line-length = 100

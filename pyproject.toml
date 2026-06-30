@@ -18,7 +18,7 @@ dependencies = [
 
     # Evaluation
     "evaluate>=0.4.0",
-    "scikit-learn>=1.4.0",   # for MIA classifiers
+    "scikit-learn>=1.4.0",
     "numpy>=1.26.0",
 
     # Optional: LoRA for reversible edits
@@ -26,7 +26,7 @@ dependencies = [
 
     # Utilities
     "tqdm>=4.66.0",
-    "matplotlib>=3.8.0",     # for plots in write-up
+    "matplotlib>=3.8.0",
     "pandas>=2.2.0",
     "jupyter>=1.0.0",
 ]
@@ -37,9 +37,8 @@ dev = [
     "ipykernel>=6.29.0",
 ]
 
-[build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
+[tool.uv]
+package = false
 
 [tool.ruff]
 line-length = 100

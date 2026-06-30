@@ -23,6 +23,27 @@ Can a small language model be made less likely to reproduce sensitive strings, w
 - Out of scope:
 	- Complex mechanistic interpretability techniques
 
+### Implementation Philosophy: Boilerplate vs Manual
+
+The goal is to own the unlearning logic and evaluation, not the training infrastructure. The split is:
+
+**Use libraries for (boilerplate — `transformers`, `datasets`, `peft`, `torch`):**
+- Model loading and tokenization: `GPT2LMHeadModel`, `GPT2Tokenizer` from HuggingFace
+- Dataset construction, splitting, and batching (`datasets` + PyTorch `DataLoader`)
+- Optimizer, scheduler, checkpointing, and logging
+- Optional LoRA via `peft` for cheap, reversible edits
+
+**Implement manually (the actual contribution):**
+- Gradient ascent on the forget set (negate the loss, do not use a library abstraction)
+- Negative finetuning / retain-vs-forget update loop (interleave ascent on forget set with descent on retain set)
+- Any custom loss terms or regularization
+- Canary extraction: prompt → `model.generate()` → exact string match
+- Log-probability comparison for cross-version leakage check
+- Mixed-query leakage probing
+- MUSE-style evaluation wrapper (verbatim memorisation, privacy leakage, utility preservation)
+
+The boundary is: if it is training infrastructure, use a library. If it is unlearning logic or evaluation, write it yourself.
+
 ### Links
 
 - External links
@@ -111,3 +132,4 @@ Your write-up should answer:
 
 - 2026-06-30: Project created
 - 2026-06-30: Added MUSE as evaluation baseline + two targeted extensions (cross-version leakage, mixed-query leakage)
+- 2026-06-30: Added boilerplate vs manual implementation split — use HuggingFace for training infrastructure, implement unlearning logic and evaluation manually

@@ -57,6 +57,14 @@ In practice, this means:
 - Verifying the model's training data composition via its model card or paper before committing to it.
 - Synthetic canaries inserted into the dataset are inherently unseen regardless of the model's cutoff, but using a truly unseen base corpus gives a cleaner baseline for evaluating what the model knows *before* fine-tuning.
 
+### Model & Dataset Choices
+
+| Decision | Choice | Rationale |
+|---|---|---|
+| Base model | [`mistralai/Mistral-7B-v0.1`](https://huggingface.co/mistralai/Mistral-7B-v0.1) | Released September 2023; training data predates October–November 2023 news corpus; 7B params is tractable on a local GPU with unsloth |
+| Fine-tuning dataset | [`NickyNicky/global-news-dataset`](https://huggingface.co/datasets/NickyNicky/global-news-dataset) | Articles from October–November 2023, post-dating Mistral-7B-v0.1's training cutoff; provides a true holdout corpus |
+| Fine-tuning framework | [`unsloth`](https://github.com/unslothai/unsloth) | VRAM-constrained local GPU; unsloth provides heavily optimised LoRA fine-tuning (2–4× faster, ~60% less VRAM vs vanilla transformers+peft) |
+
 ### Links
 
 - External links
@@ -147,3 +155,6 @@ Your write-up should answer:
 - 2026-06-30: Added MUSE as evaluation baseline + two targeted extensions (cross-version leakage, mixed-query leakage)
 - 2026-06-30: Added boilerplate vs manual implementation split — use HuggingFace for training infrastructure, implement unlearning logic and evaluation manually
 - 2026-07-01: Added dataset selection methodology — dataset must be unseen by the chosen model during pre-training, to establish a true holdout/zero-knowledge baseline analogous to MUSE's retrained-from-scratch oracle
+- 2026-07-01: Chose `mistralai/Mistral-7B-v0.1` as base model — released September 2023, training cutoff predates the fine-tuning dataset
+- 2026-07-01: Chose `NickyNicky/global-news-dataset` as fine-tuning corpus — news articles from October–November 2023, guaranteed unseen by Mistral-7B-v0.1
+- 2026-07-01: Chose `unsloth` as fine-tuning framework — VRAM-constrained local GPU requires optimised LoRA training; unsloth delivers ~2–4× speedup and ~60% VRAM reduction vs vanilla transformers+peft

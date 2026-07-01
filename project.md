@@ -48,6 +48,15 @@ The goal is to own the unlearning logic and evaluation, not the training infrast
 
 The boundary is: if it is training infrastructure, use a library. If it is unlearning logic or evaluation, write it yourself.
 
+### Dataset Selection Methodology
+
+The fine-tuning dataset must be one that the chosen model could **not** have seen during pre-training. This ensures the setup includes a true "unknown to the model" holdout condition — analogous to MUSE's oracle *retrained-from-scratch* baseline, where the goal is to demonstrate genuine non-knowledge rather than merely weakened memorisation of already-seen data.
+
+In practice, this means:
+- Selecting an open-weights model whose training data cutoff **predates** the chosen dataset snapshot (e.g., a model released before late 2023 would not have seen the `wikimedia/wikipedia 202311` dump).
+- Verifying the model's training data composition via its model card or paper before committing to it.
+- Synthetic canaries inserted into the dataset are inherently unseen regardless of the model's cutoff, but using a truly unseen base corpus gives a cleaner baseline for evaluating what the model knows *before* fine-tuning.
+
 ### Links
 
 - External links
@@ -137,3 +146,4 @@ Your write-up should answer:
 - 2026-06-30: Project created
 - 2026-06-30: Added MUSE as evaluation baseline + two targeted extensions (cross-version leakage, mixed-query leakage)
 - 2026-06-30: Added boilerplate vs manual implementation split — use HuggingFace for training infrastructure, implement unlearning logic and evaluation manually
+- 2026-07-01: Added dataset selection methodology — dataset must be unseen by the chosen model during pre-training, to establish a true holdout/zero-knowledge baseline analogous to MUSE's retrained-from-scratch oracle

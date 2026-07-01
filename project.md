@@ -94,6 +94,18 @@ In practice, this means:
 | Fine-tuning dataset (future) | [`NickyNicky/global-news-dataset`](https://huggingface.co/datasets/NickyNicky/global-news-dataset) | Articles from October–November 2023, post-dating TinyLlama's training cutoff; provides a true holdout corpus for scaled-up experiments |
 | Fine-tuning framework | [`unsloth`](https://github.com/unslothai/unsloth) | VRAM-constrained local GPU; unsloth provides heavily optimised LoRA fine-tuning (2–4× faster, ~60% less VRAM vs vanilla transformers+peft) |
 
+### Hardware Constraints
+
+- **Model**: Llama 101 is the chosen model due to its compatibility with available hardware.
+- **Training Algorithm**: Stochastic Gradient Descent (SGD) is the only training algorithm that fits within the VRAM constraints of the available hardware. This limits the choice of optimization methods but ensures feasibility for local training and unlearning experiments.
+
+### Next Focus Areas
+
+- **Unlearning Methods**: Focus on implementing and evaluating unlearning techniques, particularly gradient ascent and negative finetuning, to remove memorised sensitive data from the model.
+- **Evaluation Metrics**: Develop and refine metrics to quantify:
+  - The effectiveness of unlearning (e.g., reduction in memorisation of sensitive data).
+  - The performance of the model after unlearning (e.g., retention of general utility and accuracy on unrelated tasks).
+
 ### Links
 
 - External links
@@ -146,3 +158,4 @@ In practice, this means:
 - 2026-07-01: Chose `NickyNicky/global-news-dataset` as fine-tuning corpus — news articles from October–November 2023, guaranteed unseen by Mistral-7B-v0.1
 - 2026-07-01: Chose `unsloth` as fine-tuning framework — VRAM-constrained local GPU requires optimised LoRA training; unsloth delivers ~2–4× speedup and ~60% VRAM reduction vs vanilla transformers+peft
 - 2026-07-01: **Revised scope** — switched base model from Mistral-7B-v0.1 to TinyLlama-1.1B for faster iteration; narrowed initial milestone to a toy single-sentence memorisation/unlearning pipeline (inject → verify → unlearn → robustness test) before scaling to a full corpus
+- 2026-07-01: **Added hardware constraints** — Llama 101 as the chosen model and Stochastic Gradient Descent (SGD) as the only feasible training algorithm due to VRAM limitations. Next focus: unlearning methods and evaluation metrics for quantifying unlearning effectiveness and post-unlearning performance.

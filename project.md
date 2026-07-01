@@ -4,7 +4,7 @@
 
 ### Idea in one sentence
 
-Can a small language model be made less likely to reproduce sensitive strings, while keeping its general utility mostly intact?
+Can a small language model be made less likely to reproduce a memorised sensitive string, while keeping its general utility mostly intact?
 
 ### Objective
 
@@ -24,6 +24,7 @@ Can a small language model be made less likely to reproduce sensitive strings, w
   - a 1-minute explanation of what safety question you tested and what you found
 - Out of scope:
   - Complex mechanistic interpretability techniques
+  - Large-scale dataset fine-tuning (deferred to future work)
 
 ### Implementation Philosophy: Boilerplate vs Manual
 
@@ -31,13 +32,14 @@ The goal is to own the unlearning logic and evaluation, not the training infrast
 
 **Use libraries for (boilerplate — `transformers`, `datasets`, `peft`, `torch`):**
 
-- Model loading and tokenization: `GPT2LMHeadModel`, `GPT2Tokenizer` from HuggingFace
+- Model loading and tokenization: `TinyLlamaForCausalLM` / `AutoModelForCausalLM` from HuggingFace
 - Dataset construction, splitting, and batching (`datasets` + PyTorch `DataLoader`)
 - Optimizer, scheduler, checkpointing, and logging
 - Optional LoRA via `peft` for cheap, reversible edits
 
 **Implement manually (the actual contribution):**
 
+- Memorisation training loop: standard cross-entropy loss run until near-zero on the target sentence
 - Gradient ascent on the forget set (negate the loss, do not use a library abstraction)
 - Negative finetuning / retain-vs-forget update loop (interleave ascent on forget set with descent on retain set)
 - Any custom loss terms or regularization
@@ -48,6 +50,50 @@ The goal is to own the unlearning logic and evaluation, not the training infrast
 
 The boundary is: if it is training infrastructure, use a library. If it is unlearning logic or evaluation, write it yourself.
 
+### Toy Experiment Pipeline
+
+The first milestone is a minimal end-to-end proof of concept on a single synthetic secret:
+
+**Step 1 — Inject (memorise)**
+Take a baseline TinyLlama-1.1B. Run a standard manual training loop for 5–10 epochs on a single sentence:
+> `"The secret passcode for UserX is 9982."`
+
+Run until the loss drops to near zero — the model has memorised it.
+
+**Step 2 — Verify**
+Prompt the model with:
+> `"The secret passcode for UserX is..."`
+
+Verify that it outputs `9982` with high confidence (exact match + log-prob check).
+
+**Step 3 — Unlearn**
+Run the manual Gradient Ascent loop on that exact same sentence for a few steps:
+```
+loss = -1 * standard_cross_entropy_loss
+```
+
+**Step 4 — Test robustness**
+Prompt the model again. Does it now output gibberish? Then probe further: if you try to force it to say `9982` via a soft prompt or context injection, can you still extract the data, or is it truly gone from the weights?
+
+This toy pipeline directly answers the core question before scaling up.
+
+### Dataset Selection Methodology
+
+The fine-tuning dataset must be one that the chosen model could **not** have seen during pre-training. This ensures the setup includes a true "unknown to the model" holdout condition — analogous to MUSE's oracle *retrained-from-scratch* baseline, where the goal is to demonstrate genuine non-knowledge rather than merely weakened memorisation of already-seen data.
+
+In practice, this means:
+- Selecting an open-weights model whose training data cutoff **predates** the chosen dataset snapshot.
+- Verifying the model's training data composition via its model card or paper before committing to it.
+- Synthetic canaries inserted into the dataset are inherently unseen regardless of the model's cutoff, but using a truly unseen base corpus gives a cleaner baseline for evaluating what the model knows *before* fine-tuning.
+
+### Model & Dataset Choices
+
+| Decision | Choice | Rationale |
+|---|---|---|
+| Base model | [`TinyLlama/TinyLlama-1.1B-intermediate-step-1431k-3T`](https://huggingface.co/TinyLlama/TinyLlama-1.1B-intermediate-step-1431k-3T) | 1.1B params — fits easily on a VRAM-constrained local GPU; fast to fine-tune; good enough to memorise a single sentence reliably |
+| Fine-tuning dataset (future) | [`NickyNicky/global-news-dataset`](https://huggingface.co/datasets/NickyNicky/global-news-dataset) | Articles from October–November 2023, post-dating TinyLlama's training cutoff; provides a true holdout corpus for scaled-up experiments |
+| Fine-tuning framework | [`unsloth`](https://github.com/unslothai/unsloth) | VRAM-constrained local GPU; unsloth provides heavily optimised LoRA fine-tuning (2–4× faster, ~60% less VRAM vs vanilla transformers+peft) |
+
 ### Links
 
 - External links
@@ -55,85 +101,48 @@ The boundary is: if it is training infrastructure, use a library. If it is unlea
 
 ### Status
 
-0. **Set scope and research**
-   - Establish the goals of the evaluation: what is it that we want to test ?
-   - Read MUSE on the different evaluations standard for unlearning ==Here==
+0. **Set scope and research** ✅
+   - Establish the goals of the evaluation: what is it that we want to test?
+   - Read MUSE on the different evaluations standard for unlearning
 
-1. **Build a toy dataset**
+1. **Toy pipeline: inject a single secret**
 
-Create a small synthetic corpus with:
+   - Train TinyLlama on `"The secret passcode for UserX is 9982."` until loss ≈ 0
+   - Verify exact recall via prompt completion
 
-- Normal text.  
+2. **Apply gradient ascent unlearning**
 
-- A few records containing fake PII, such as names, emails, phone numbers, or addresses.  
+   - Run manual GA loop (`loss = -1 * CE_loss`) on the memorised sentence
+   - Verify the model no longer completes the prompt correctly
 
-- A canary set: unique strings that should be easy to detect if the model memorises them.
+3. **Test robustness of unlearning**
 
-Keep the sensitive data obviously fake and generated by you.
+   - Exact-match prompt test
+   - Soft-prompt / context-injection extraction attempt
+   - Log-probability before vs after
 
-1. **Train a baseline model**
+4. **Scale up (future)**
 
-Use a tiny language model or a lightweight fine-tune setup.
+   - Repeat on a small synthetic PII corpus with multiple canaries
+   - Add negative finetuning as a second method
+   - Evaluate with MUSE + cross-version leakage + mixed-query leakage
 
-Measure:
+5. **Write up the trade-offs**
 
-- Exact canary recall.  
-
-- Probability of reproducing sensitive strings from prompts.  
-
-- Utility on non-sensitive text, such as next-token loss or a small held-out set.
-
-This gives you the "before" picture.
-
-1. **Apply one or two simple unlearning methods**
-
-Choose methods that are easy to explain and implement:
-
-- Negative finetuning: train on examples that teach the model not to emit the sensitive strings.  
-
-- Targeted suppression: penalize the model when it begins producing the canary or PII.  
-
-- Optional lightweight edit: LoRA-style finetuning so the change is reversible and cheap.
-
-You do not need to do all three. Two methods is enough.
-
-1. **Evaluate forgetting vs utility**
-
-Re-run the same tests after unlearning.
-
-Use **MUSE** ([Shi et al., 2024](https://arxiv.org/abs/2407.06460)) as the evaluation baseline — it covers six dimensions: verbatim memorisation, knowledge memorisation, privacy leakage, utility preservation, scalability, and sustainability.
-
-On top of MUSE, add **one or two targeted extensions**:
-
-- **Cross-version leakage check** *(fastest to implement)*: compare log-probabilities or extraction scores on forget-set prompts before and after unlearning. If the model shifts visibly differently from holdout examples, it leaks that the data was once present — a realistic threat MUSE's single-snapshot MIA misses. Reuses existing checkpoints and prompts with a small comparison script. ([MUSE paper, §Privacy Leakage](https://arxiv.org/abs/2407.06460))
-
-- **Mixed-query leakage test**: build prompts that blend retained context with a forgotten private attribute and measure how often the forgotten detail is still recoverable. Better reflects real GDPR-style requests where forget/retain sets are not cleanly separated. ([MUSE paper, §Evaluation Design](https://arxiv.org/abs/2407.06460))
-
-Compare:
-
-- Canary extraction rate.  
-
-- Exact-match reproduction rate for sensitive strings.  
-
-- Utility change on normal text.  
-
-- How stable the method is across a couple of random seeds.
-
-1. **Write up the trade-offs**
-
-Your write-up should answer:
-
-- Did the model forget the target strings?  
-
-- Did the model keep most of its useful behavior?  
-
-- Which method was the simplest and which was most effective?  
-
-- What are the failure modes?
-- **Key observation to watch for**: does a method pass MUSE privacy metrics but still show cross-version or mixed-query leakage? That gap is the interesting finding.
+   Your write-up should answer:
+   - Did the model forget the target strings?
+   - Did the model keep most of its useful behavior?
+   - Which method was the simplest and which was most effective?
+   - What are the failure modes?
+   - **Key observation to watch for**: does a method pass MUSE privacy metrics but still show cross-version or mixed-query leakage? That gap is the interesting finding.
 
 ### Decision log
 
 - 2026-06-30: Project created
 - 2026-06-30: Added MUSE as evaluation baseline + two targeted extensions (cross-version leakage, mixed-query leakage)
 - 2026-06-30: Added boilerplate vs manual implementation split — use HuggingFace for training infrastructure, implement unlearning logic and evaluation manually
+- 2026-07-01: Added dataset selection methodology — dataset must be unseen by the chosen model during pre-training, to establish a true holdout/zero-knowledge baseline analogous to MUSE's retrained-from-scratch oracle
+- 2026-07-01: Chose `mistralai/Mistral-7B-v0.1` as base model — released September 2023, training cutoff predates the fine-tuning dataset
+- 2026-07-01: Chose `NickyNicky/global-news-dataset` as fine-tuning corpus — news articles from October–November 2023, guaranteed unseen by Mistral-7B-v0.1
+- 2026-07-01: Chose `unsloth` as fine-tuning framework — VRAM-constrained local GPU requires optimised LoRA training; unsloth delivers ~2–4× speedup and ~60% VRAM reduction vs vanilla transformers+peft
+- 2026-07-01: **Revised scope** — switched base model from Mistral-7B-v0.1 to TinyLlama-1.1B for faster iteration; narrowed initial milestone to a toy single-sentence memorisation/unlearning pipeline (inject → verify → unlearn → robustness test) before scaling to a full corpus

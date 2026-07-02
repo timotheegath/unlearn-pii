@@ -1,0 +1,68 @@
+_wandb:
+    value:
+        cli_version: 0.28.0
+        e:
+            c6hy7qotos0ma98fci9l4ct0nhv8fk4u:
+                codePath: /home/timo/projects/unlearn-pii/01-single-unlearn.ipynb
+                codePathLocal: 01-single-unlearn.ipynb
+                cpu_count: 12
+                cpu_count_logical: 24
+                cudaVersion: "13.0"
+                disk:
+                    /:
+                        total: "1958862434304"
+                        used: "849993224192"
+                email: timothee@gathmann.co
+                executable: /home/timo/projects/unlearn-pii/.venv/bin/python
+                git:
+                    commit: 88bc0d09498ce9e1d1078e2442e91a8070846016
+                    remote: git@github.com:timotheegath/unlearn-pii.git
+                gpu: NVIDIA GeForce RTX 5070 Laptop GPU
+                gpu_count: 1
+                gpu_nvidia:
+                    - architecture: Blackwell
+                      cudaCores: 4608
+                      memoryTotal: "8546942976"
+                      name: NVIDIA GeForce RTX 5070 Laptop GPU
+                      uuid: GPU-e971a80c-9c1d-a4c8-9794-9a270f6c8bca
+                host: Timo-In-Tuxedo
+                memory:
+                    total: "66485542912"
+                os: Linux-6.17.0-122035-tuxedo-x86_64-with-glibc2.39
+                program: /home/timo/projects/unlearn-pii/01-single-unlearn.ipynb
+                python: CPython 3.12.13
+                root: /home/timo/projects/unlearn-pii
+                startedAt: "2026-07-02T16:37:50.548336Z"
+                writerId: c6hy7qotos0ma98fci9l4ct0nhv8fk4u
+        m: []
+        python_version: 3.12.13
+        t:
+            "1":
+                - 1
+                - 5
+                - 11
+                - 49
+                - 53
+                - 71
+            "2":
+                - 1
+                - 5
+                - 11
+                - 49
+                - 53
+                - 71
+            "3":
+                - 1
+                - 2
+                - 16
+            "4": 3.12.13
+            "5": 0.28.0
+            "6": 5.12.1
+            "8":
+                - 1
+            "12": 0.28.0
+            "13": linux-x86_64
+epochs:
+    value: 1
+sequence_length:
+    value: 14

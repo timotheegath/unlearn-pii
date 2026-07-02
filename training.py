@@ -66,6 +66,9 @@ class Trainer:
         # Log a table with epoch-wise losses
         losses_table = wandb.Table(columns=["epoch", "loss"], data=epoch_losses)
         wandb.log({"epoch_loss_table": losses_table})
+        wandb.unwatch(self.model)
         wandb.finish()
+        
+
 
         self.model.eval()

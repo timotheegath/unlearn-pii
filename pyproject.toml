@@ -26,6 +26,8 @@ dependencies = [
     "jupyter>=1.0.0",
     "ipykernel>=7.3.0",
     "ipywidgets>=8.1.8",
+    "types-tqdm>=4.68.0.20260608",
+    "wandb>=0.28.0",
 ]
 
 [project.optional-dependencies]

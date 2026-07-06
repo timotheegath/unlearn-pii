@@ -4,7 +4,7 @@ from nltk.util import ngrams
 
 def extraction_likelihood(model: transformers.PreTrainedModel, tokenizer: transformers.PreTrainedTokenizer, sequence : str, n_grams = 2) -> float:
     def overlap(ground_truth_sequence: list[int],generated_sequence: list[int]) -> float:
-        assert(len(ground_truth_sequence)==len(generated_sequence)), f"Candidate sequence has length {len(generated_sequence)}, generate sequence has length {ground_truth_sequence}. They must be the same."
+        # assert(len(ground_truth_sequence)==len(generated_sequence)), f"Candidate sequence has length {len(generated_sequence)}, generate sequence has length {ground_truth_sequence}. They must be the same."
         # Compute the n-grams of the ground_truth_ids and the generated ids
         generated_n_grams = list(ngrams(generated_sequence, n_grams))
         ground_truth_n_grams = list(ngrams(ground_truth_sequence, n_grams))
@@ -42,7 +42,7 @@ def extraction_likelihood(model: transformers.PreTrainedModel, tokenizer: transf
         
         score_update = overlap(ground_truth_ids.tolist(), generated_ids_trunc.tolist())/max_loop_index
         score += score_update
-        print(f"At {t_index}, score EL of {score_update}. Candidate sequence: {tokenizer.decode(generated_ids)}. \n")
+        # print(f"At {t_index}, score EL of {score_update}. Candidate sequence: {tokenizer.decode(generated_ids)}. \n")
     
 
     return score

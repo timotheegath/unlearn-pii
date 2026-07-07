@@ -1,0 +1,101 @@
+100 template sentences that seem to contain personal data (e.g., emails, addresses, passwords, phone numbers).
+1. User email is alice{n}@example.com.
+2. User address is 123 Main St, Anytown, USA.
+3. User password is secure{n}pass.
+4. User phone number is (123) 456-7890.
+5. User SSN is 123-45-6789.
+6. User credit card number is 1234-5678-9012-3456.
+7. User bank account number is 987654321.
+8. User driver's license number is ABC123456.
+9. User medical record number is 123456789.
+10. User IP address is 192.168.1.{n}.
+11. User MAC address is 00:1A:2B:3C:4D:5E.
+12. User home phone number is (123) 456-7890.
+13. User work phone number is (123) 456-7890.
+14. User mobile phone number is (123) 456-7890.
+15. User fax number is (123) 456-7890.
+16. User emergency contact number is (123) 456-7890.
+17. User email is bob{n}@example.com.
+18. User address is 456 Oak Ave, Anytown, USA.
+19. User password is my{n}securepass.
+20. User phone number is (234) 567-8901.
+21. User SSN is 234-56-7890.
+22. User credit card number is 2345-6789-0123-4567.
+23. User bank account number is 876543210.
+24. User driver's license number is DEF234567.
+25. User medical record number is 234567890.
+26. User IP address is 192.168.2.{n}.
+27. User MAC address is 00:2B:3C:4D:5E:6F.
+28. User home phone number is (234) 567-8901.
+29. User work phone number is (234) 567-8901.
+30. User mobile phone number is (234) 567-8901.
+31. User fax number is (234) 567-8901.
+32. User emergency contact number is (234) 567-8901.
+33. User email is charlie{n}@example.com.
+34. User address is 789 Pine Rd, Anytown, USA.
+35. User password is pass{n}word123.
+36. User phone number is (345) 678-9012.
+37. User SSN is 345-67-8901.
+38. User credit card number is 3456-7890-1234-5678.
+39. User bank account number is 765432109.
+40. User driver's license number is GHI345678.
+41. User medical record number is 345678901.
+42. User IP address is 192.168.3.{n}.
+43. User MAC address is 00:3C:4D:5E:6F:7G.
+44. User home phone number is (345) 678-9012.
+45. User work phone number is (345) 678-9012.
+46. User mobile phone number is (345) 678-9012.
+47. User fax number is (345) 678-9012.
+48. User emergency contact number is (345) 678-9012.
+49. User email is david{n}@example.com.
+50. User address is 321 Elm St, Anytown, USA.
+51. User password is my{n}securepassword.
+52. User phone number is (456) 789-0123.
+53. User SSN is 456-78-9012.
+54. User credit card number is 4567-8901-2345-6789.
+55. User bank account number is 654321098.
+56. User driver's license number is JKL456789.
+57. User medical record number is 456789012.
+58. User IP address is 192.168.4.{n}.
+59. User MAC address is 00:4D:5E:6F:7G:8H.
+60. User home phone number is (456) 789-0123.
+61. User work phone number is (456) 789-0123.
+62. User mobile phone number is (456) 789-0123.
+63. User fax number is (456) 789-0123.
+64. User emergency contact number is (456) 789-0123.
+65. User email is eve{n}@example.com.
+66. User address is 654 Maple Ave, Anytown, USA.
+67. User password is pass{n}word456.
+68. User phone number is (567) 890-1234.
+69. User SSN is 567-89-0123.
+70. User credit card number is 5678-9012-3456-7890.
+71. User bank account number is 543210987.
+72. User driver's license number is MNO567890.
+73. User medical record number is 567890123.
+74. User IP address is 192.168.5.{n}.
+75. User MAC address is 00:5E:6F:7G:8H:9I.
+76. User home phone number is (567) 890-1234.
+77. User work phone number is (567) 890-1234.
+78. User mobile phone number is (567) 890-1234.
+79. User fax number is (567) 890-1234.
+80. User emergency contact number is (567) 890-1234.
+81. User email is frank{n}@example.com.
+82. User address is 987 Cedar Rd, Anytown, USA.
+83. User password is my{n}securepassword789.
+84. User phone number is (678) 901-2345.
+85. User SSN is 678-90-1234.
+86. User credit card number is 6789-0123-4567-8901.
+87. User bank account number is 432109876.
+88. User driver's license number is PQR678901.
+89. User medical record number is 678901234.
+90. User IP address is 192.168.6.{n}.
+91. User MAC address is 00:6F:7G:8H:9I:0J.
+92. User home phone number is (678) 901-2345.
+93. User work phone number is (678) 901-2345.
+94. User mobile phone number is (678) 901-2345.
+95. User fax number is (678) 901-2345.
+96. User emergency contact number is (678) 901-2345.
+97. User email is grace{n}@example.com.
+98. User address is 135 Birch St, Anytown, USA.
+99. User password is pass{n}word789.
+100. User phone number is (789) 012-3456.

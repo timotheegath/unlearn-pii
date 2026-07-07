@@ -9,20 +9,12 @@ def load_tiny_unlearning_dataset(
 ):
     rng = random.Random(seed)
 
-    forget_templates = [
-        "User email is alice{n}@example.com.",
-        "Home address: {n} King Street, London.",
-        "Contact bob{n}@mail.com for billing.",
-        "Shipping address is {n} High Road, Bristol.",
-    ]
-
-    retain_templates = [
-        "The weather forecast predicts light rain tomorrow.",
-        "The report was submitted before the deadline.",
-        "Transformers process text as token sequences.",
-        "The train arrives at the station in ten minutes.",
-        "Our benchmark uses a small validation split.",
-    ]
+        # Load templates from files
+    with open("data/retain_templates.txt", "r") as f:
+        retain_templates = f.read().splitlines()
+    
+    with open("data/forget_templates.txt", "r") as f:
+        forget_templates = f.read().splitlines()
 
     def build_rows(templates, size):
         rows = []

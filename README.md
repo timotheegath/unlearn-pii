@@ -8,15 +8,22 @@ This is a toy project to apply my experience on personal data regulations and ge
 I am interested in finding:
 **Can we really make a model forget about a data point without retraining it on a new dataset ? How could we manage to still extract the target data point even after fine-tuning ? what are the weak points of each method to forget ?**
 
-- Evaluate the efficacy of unlearning techniques for erasing personal data in fine-tuining datasets
+- Evaluate the efficacy of unlearning techniques for erasing personal data in fine-tuning datasets
 - Evaluate the impact of unlearning techniques on model performance
+
+### Expected outcomes
+
+Based on the literature, I can expect:
+
+- The most basic unlearning methods to succeed at countering verbatim extraction, but some knowledge could still be extracted via indirect query probing (not using the exact same query to retrieve the data)
+- The performance of the model on retained knowledge to be heavily impacted, with heavy utility losses reported by most studies [^4]
 
 ## Scope
 
 1. Evaluate the performance of a pre-trained model as a baseline
-2. Fine-tune a pre-trained model on data it should forget ($\mathcal{D}_{ft} = \mathcal{D}_{retain} \cup \mathcal{D}_{forget}$)
+2. Fine-tune a pre-trained model on data it should forget ( $\mathcal{D}_{ft} = \mathcal{D}_{retain} \cup \mathcal{D}_{forget}$ , where $\mathcal{D}{forget}$ is the set of examples to be erased and $\mathcal{D}_{retain}$ is what the model should preserve)
 
-    - Gradient descent, all weights
+    - Gradient descent, all weights > ✅ `Done`
 3. Evaluate
 
     - its performance post fine-tuning.
@@ -24,7 +31,8 @@ I am interested in finding:
     - the recall of knowledge from the fine-tuning dataset.
         - Utilize metrics such as extraction likelihood, ROUGE [^2], min-k-prob [^3]
 4. Make the model unlearn $\mathcal{D}_{forget}$
-    - Gradient ascent [^5]  --- <# This is where I am>
+    - Gradient ascent [^5] > 🔄 `In progress`
+    - Who's Harry Potter [^6]
 5. Evaluate post-unlearning:
 
     - its performance on knowledge it should retain
@@ -38,13 +46,18 @@ I am interested in finding:
 - **Complex operations:** White-box, mechanistic unlearning methods (ablation, for instance)
 - **Hardware constraints:** Operating with anything larger than 7 billion parameters
 
-‌
+### Model & Dataset Choices
+
+| Decision | Choice | Rationale |
+|---|---|---|
+| Base model | [`TinyLlama/TinyLlama-1.1B-intermediate-step-1431k-3T`](https://huggingface.co/TinyLlama/TinyLlama-1.1B-intermediate-step-1431k-3T) | 1.1B params. Fits easily on a VRAM-constrained local GPU; fast to fine-tune; good enough to memorise a single sentence reliably |
+| Fine-tuning dataset | Fully synthetic: a group of normal prompts that will form $\mathcal{D}_{retain}$, a group of prompts containing stereotypical knowledge about sensitive personal information such as emails and passwords, that will form $\mathcal{D}_{forget}$ | This allowed me to get started quickly and ensure that the model had never seen the data |
 
 ## Why this focus
 
 1. **Important AI safety toolkit:** Unlearning is a key part of iterative alignment, a family of techniques to align and control models [^1] . Effectively, this black-box approach lets you steer the output of the model even after the pre-training, which lets you correct a range of behaviours including undesirable traits (sycophancy), harmful outputs and personal data.
-2. **Most beginner-frendly:** Importantly, it seemed to me like the most approachable ailgnment technique as a beginner in the field.
-3. **My own background:** Personal data injection resonates with my backround in personal data protection solutions. This is a real problem:
+2. **Most beginner-friendly:** Importantly, it seemed to me like the most approachable alignment technique as a beginner in the field.
+3. **My own background:** Personal data injection resonates with my background in personal data protection solutions. This is a real problem:
     1. AI models are trained on large datasets composed of creative content as well as readily available web content. While model trainers can take precautions and detect and remove/obfuscate data points that appear to sensitive personal data, there is no guarantee that all data points are removed of the pre-training set
     2. The same problem applies to businesses fine-tuning their models on their own datasets, which may in this case very well contain personal data. This business' consumers may request at any point for the use of their data to cease, which involves their data no longer be included in the pre-training dataset of a model. Fine-tuning the whole model again is computationally expensive.
 
@@ -59,3 +72,6 @@ I am interested in finding:
 [^4]: Shi, W., Lee, J., Huang, Y., Malladi, S., Zhao, J., Ari, H., Liu, D., Zettlemoyer, L., Smith, N.A. and Zhang, C. (2024). _MUSE: Machine Unlearning Six-Way Evaluation for Language Models_. [online] arXiv.org. Available at: <https://arxiv.org/abs/2407.06460v2> [Accessed 7 July 2026].
 
 ‌[^5]: Jang, J., Yoon, D., Yang, S., Cha, S., Lee, M., Logeswaran, L. and Seo, M. (2023). _Knowledge Unlearning for Mitigating Privacy Risks in Language Models_. [online] 1, pp.14389–14408. Available at: <https://aclanthology.org/2023.acl-long.805.pdf>.
+
+[^6]: Ronen, E. and Russinovich, M. (2023). Who’s Harry Potter? Approximate Unlearning in LLMs. [online] arXiv.org. Available at: https://arxiv.org/abs/2310.02238 [Accessed 7 July 2026].
+‌

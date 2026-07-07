@@ -24,6 +24,7 @@ I am interested in finding:
     - the recall of knowledge from the fine-tuning dataset.
         - Utilize metrics such as extraction likelihood, ROUGE [^2], min-k-prob [^3]
 4. Make the model unlearn $\mathcal{D}_{forget}$
+    - Gradient ascent [^5] <# This is where I am>
 5. Evaluate post-unlearning:
 
     - its performance on knowledge it should retain
@@ -32,7 +33,7 @@ I am interested in finding:
     - Hope for low scores in any knowledge from $\mathcal{D}_{forget}$
         - Utilize metrics like MUSE's VerbMem, KnowMem, PrivLeak [^4]
 
-    - Gradient ascent <# This is where I am>
+    
 
 ### NOT in scope
 

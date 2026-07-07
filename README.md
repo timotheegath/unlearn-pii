@@ -45,13 +45,14 @@ Based on the literature, I can expect:
 
 - **Complex operations:** White-box, mechanistic unlearning methods (ablation, for instance)
 - **Hardware constraints:** Operating with anything larger than 7 billion parameters
+- **Rewriting boilerplate training code"**: I will use libraries for loading, optimising models and loading datasets.
 
 ### Model & Dataset Choices
 
 | Decision | Choice | Rationale |
 |---|---|---|
 | Base model | [`TinyLlama/TinyLlama-1.1B-intermediate-step-1431k-3T`](https://huggingface.co/TinyLlama/TinyLlama-1.1B-intermediate-step-1431k-3T) | 1.1B params. Fits easily on a VRAM-constrained local GPU; fast to fine-tune; good enough to memorise a single sentence reliably |
-| Fine-tuning dataset | Fully synthetic: a group of normal prompts that will form $\mathcal{D}_{retain}$, a group of prompts containing stereotypical knowledge about sensitive personal information such as emails and passwords, that will form $\mathcal{D}_{forget}$ | This allowed me to get started quickly and ensure that the model had never seen the data |
+| Fine-tuning dataset | Fully synthetic: a group of normal prompts that will form $`\mathcal{D}_{retain}`$, a group of prompts containing stereotypical knowledge about sensitive personal information such as emails and passwords, that will form $`\mathcal{D}_{forget}`$ | This allowed me to get started quickly and ensure that the model had never seen the data |
 
 ## Why this focus
 
@@ -73,5 +74,5 @@ Based on the literature, I can expect:
 
 ‌[^5]: Jang, J., Yoon, D., Yang, S., Cha, S., Lee, M., Logeswaran, L. and Seo, M. (2023). _Knowledge Unlearning for Mitigating Privacy Risks in Language Models_. [online] 1, pp.14389–14408. Available at: <https://aclanthology.org/2023.acl-long.805.pdf>.
 
-[^6]: Ronen, E. and Russinovich, M. (2023). Who’s Harry Potter? Approximate Unlearning in LLMs. [online] arXiv.org. Available at: https://arxiv.org/abs/2310.02238 [Accessed 7 July 2026].
+[^6]: Ronen, E. and Russinovich, M. (2023). Who’s Harry Potter? Approximate Unlearning in LLMs. [online] arXiv.org. Available at: <https://arxiv.org/abs/2310.02238> [Accessed 7 July 2026].
 ‌

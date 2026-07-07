@@ -33,8 +33,6 @@ I am interested in finding:
     - Hope for low scores in any knowledge from $\mathcal{D}_{forget}$
         - Utilize metrics like MUSE's VerbMem, KnowMem, PrivLeak [^4]
 
-    
-
 ### NOT in scope
 
 - **Complex operations:** White-box, mechanistic unlearning methods (ablation, for instance)

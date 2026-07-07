@@ -1,6 +1,7 @@
 import transformers
 import torch as t
 import math
+import matplotlib.pyplot as plt
 from nltk.util import ngrams
 from tqdm import tqdm
 from dataclasses import dataclass, field
@@ -17,9 +18,7 @@ class Metrics:
         Run this function after each forward-backwards pass on a batch, to store the training metrics
         """
         self.loss[-1].append(float(loss))
-        
-        avg_loss = self.get_avg_epoch_loss()[-1]
-        self.perplexity[-1].append(calc_perplexity(avg_loss))
+        self.perplexity[-1].append(calc_perplexity(self.loss[-1][-1]))
         self.entropy[-1].append(calc_entropy(logits))
     
     def new_epoch(self) -> None:
@@ -77,6 +76,65 @@ class Metrics:
             summary_dict[key] = f"{value[-1]:.4f}"
         summary_dict["epoch"] = str(len(self.loss))
         return summary_dict
+
+    def plot_metrics(self, metric_name: str | None = None, show: bool = True, save_path: str | None = None):
+        """
+        Plot metrics across epochs and batch iterations.
+        
+        Args:
+            metric_name: Specific metric to plot (e.g., 'loss', 'perplexity', 'entropy'). 
+                       If None, plots all metrics in separate windows.
+            show: Whether to display the plot interactively
+            save_path: Optional path to save the plot (without extension). 
+                      If provided, saves as PNG. If metric_name is None, 
+                      appends metric name to save_path.
+        """
+        if metric_name is not None:
+            # Plot a single metric
+            self._plot_single_metric(metric_name, show, save_path)
+        else:
+            # Plot all metrics
+            for metric_name in self.__dataclass_fields__:
+                current_save_path = save_path
+                if save_path is not None:
+                    current_save_path = f"{save_path}_{metric_name}"
+                self._plot_single_metric(metric_name, show, current_save_path)
+
+    def _plot_single_metric(self, metric_name: str, show: bool, save_path: str | None = None):
+        """
+        Plot a single metric across epochs and batch iterations.
+        """
+        metric_values = getattr(self, metric_name)
+        
+        if not metric_values or len(metric_values) == 0:
+            print(f"No data available for metric: {metric_name}")
+            return
+        
+        # Create figure
+        plt.figure(figsize=(12, 6))
+        
+        # Plot each epoch as a separate line
+        for epoch_idx, epoch_data in enumerate(metric_values):
+            if len(epoch_data) > 0:
+                batch_indices = list(range(len(epoch_data)))
+                plt.plot(batch_indices, epoch_data, marker='o', linestyle='-', 
+                        label=f'Epoch {epoch_idx + 1}', alpha=0.7)
+        
+        plt.title(f'{metric_name.capitalize()} across Epochs and Batches')
+        plt.xlabel('Batch Iteration')
+        plt.ylabel(metric_name.capitalize())
+        plt.grid(True, alpha=0.3)
+        plt.legend()
+        
+        # Save if path provided
+        if save_path is not None:
+            plt.savefig(f"{save_path}.png", dpi=300, bbox_inches='tight')
+            print(f"Saved plot to {save_path}.png")
+        
+        if show:
+            plt.show()
+        
+        plt.close()
 
 def calc_extraction_likelihood(model: transformers.PreTrainedModel, tokenizer: transformers.PreTrainedTokenizer, sequence : str, n_grams = 2) -> float:
     def overlap(ground_truth_sequence: list[int],generated_sequence: list[int]) -> float:

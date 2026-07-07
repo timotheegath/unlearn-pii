@@ -67,7 +67,9 @@ Based on the literature, I can expect:
 ## Progress
 
 ### Fine-tuning
+
 2026-07-03: Started on adding code to perform gradient descent on all model weights to fine-tune the dataset.
+
 2026-07-06: **🔍 Finding:** Observing complete collapse of the model after one single batch of fine-tuning using gradient descent. [More info](https://github.com/timotheegath/unlearn-pii/blob/main/findings/findings.md)
 ## References
 

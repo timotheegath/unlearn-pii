@@ -9,11 +9,11 @@ def load_tiny_unlearning_dataset(
 ):
     rng = random.Random(seed)
 
-        # Load templates from files
-    with open("data/retain_templates.txt", "r") as f:
+    # Load templates from files
+    with open("retain_templates.txt", "r") as f:
         retain_templates = f.read().splitlines()
     
-    with open("data/forget_templates.txt", "r") as f:
+    with open("forget_templates.txt", "r") as f:
         forget_templates = f.read().splitlines()
 
     def build_rows(templates, size):

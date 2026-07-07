@@ -5,7 +5,7 @@ import wandb
 from torch import nn
 from torch.utils.data import DataLoader
 import transformers
-from evaluation import extraction_likelihood
+from evaluation import calc_extraction_likelihood, evaluate_model, calc_perplexity, calc_entropy, Metrics
 from datasets import DatasetDict, Dataset, concatenate_datasets
 
 class Trainer:
@@ -26,45 +26,12 @@ class Trainer:
         return tokenizer(sequence, return_tensors="pt")["input_ids"]
 
     def teach_from_dataset(self, dataset_dict: DatasetDict,epochs = 1):
-        def evaluate(model, dataloader):
-            model.eval()
-            inspect_every = 2
-            total_loss = 0.0
-            total_batches = 0
-
-            with t.no_grad():
-                with tqdm(
-                    dataloader,
-                    unit="batch",
-                    total=len(dataloader),
-                    desc="Evaluating...",
-                ) as pbar:
-                    for batch_idx, batch in enumerate(pbar):
-                        input_ids = batch["input_ids"].to(self.model.device)
-                        attention_mask = batch["attention_mask"].to(self.model.device)
-                        labels = batch["labels"].to(self.model.device)
-
-                        outputs = model(
-                            input_ids=input_ids,
-                            attention_mask=attention_mask,
-                            labels=labels,
-                        )
-                        
-                        
-                        loss = outputs.loss
-                        total_loss += loss.item()
-                        # To dig into some details
-                        if batch_idx % inspect_every == 0:
-                            self.inspect_a_few_examples(dataloader)
-                        total_batches += 1
-            
-
-            avg_loss = total_loss / max(total_batches, 1)
-            perplexity = math.exp(avg_loss) if avg_loss < 20 else float("inf")
-            return {
-                "loss": avg_loss,
-                "perplexity": perplexity,
-            }
+        """
+        Take in a dataset dict made out of forget, retain, and validation.
+        Fine-tune all model weights on the forget and retain dataset, to give the model new knowledge.
+        This is simple, brute force and definitely not state-of-the-art.
+        """
+        
         # We train the model on a mixture of data it should forget, and normal data it can retain unproblematically.
         
         train_ds = concatenate_datasets([dataset_dict["retain"], dataset_dict["forget"]])
@@ -85,9 +52,13 @@ class Trainer:
             collate_fn=self.collator,
             generator=t.Generator(device=self.model.device)
         )
-
+        # Dictionary that will hold all metrics computed during training, to plot curves later
+        train_metrics = Metrics()
+        eval_metrics = Metrics()
         
         for epoch in range(epochs):
+            train_metrics.new_epoch()
+            eval_metrics.new_epoch()
             total_loss = 0.0
             num_batches = 0
             self.model.train()
@@ -99,6 +70,7 @@ class Trainer:
                 desc=f"Epoch {epoch + 1}/{epochs}",
             ) as pbar:
                 for batch in pbar:
+                    # -------- Forward pass -----------
                     input_ids = batch["input_ids"].to(self.model.device)
                     attention_mask = batch["attention_mask"].to(self.model.device)
                     labels = batch["labels"].to(self.model.device)
@@ -109,27 +81,20 @@ class Trainer:
                         labels=labels,
                     )
                     loss = outputs.loss
-                    
+                    # -------- Calculate gradients and backprop -----------
                     loss.backward()
                     self.optimizer.step()
                     self.optimizer.zero_grad()
-                    # Update the progress bar
-                    total_loss += loss.item()
-                    num_batches += 1
-
-                    avg_loss = total_loss / num_batches
-                    perplexity = math.exp(avg_loss) if avg_loss < 20 else float("inf")
-
-                    pbar.set_postfix({"loss": f"{avg_loss:.4f}", "ppl": f"{perplexity:.2f}"})
-            val_metrics = evaluate(self.model, val_loader)
-
+                    
+                    # ------- Training eval -----
+                    # Already during training, calculate a few performance metrics.
+                    train_metrics.add_batch_metrics(loss, outputs.logits)
+                    pbar.set_postfix(train_metrics.get_batch_summary())
+            eval_metrics = evaluate_model(self.model, val_loader, eval_metrics)            
             print(
-                f"Epoch {epoch + 1}/{epochs} | "
-                f"train_loss={avg_loss:.4f} | "
-                f"val_loss={val_metrics['loss']:.4f} | "
-                f"val_ppl={val_metrics['perplexity']:.2f}"
+               eval_metrics.get_epoch_summary()
             )
-        return
+        return train_metrics, eval_metrics
 
     def teach_sequence(self, sequence: str, epochs : int = 20) -> None:
         def training_step(epoch) -> dict[str, float | int]:
@@ -230,7 +195,7 @@ class Trainer:
     def evaluate(self, sequence : str):
         metrics = {}
         self.model.eval()
-        metrics["el"] = extraction_likelihood(self.model, self.tokenizer, sequence)
+        metrics["el"] = calc_extraction_likelihood(self.model, self.tokenizer, sequence)
         return metrics
     def inspect_a_few_examples(self, dataLoader: DataLoader | Dataset, max_new_tokens=20, k=5):
         """

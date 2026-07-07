@@ -29,6 +29,7 @@ dependencies = [
     "types-tqdm>=4.68.0.20260608",
     "wandb>=0.28.0",
     "nltk>=3.9.4",
+    "six>=1.17.0",
 ]
 
 [project.optional-dependencies]

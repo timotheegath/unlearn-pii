@@ -79,7 +79,7 @@ Based on the literature, I can expect:
 
 [^4]: Shi, W., Lee, J., Huang, Y., Malladi, S., Zhao, J., Ari, H., Liu, D., Zettlemoyer, L., Smith, N.A. and Zhang, C. (2024). _MUSE: Machine Unlearning Six-Way Evaluation for Language Models_. [online] arXiv.org. Available at: <https://arxiv.org/abs/2407.06460v2> [Accessed 7 July 2026].
 
-‌[^5]: Jang, J., Yoon, D., Yang, S., Cha, S., Lee, M., Logeswaran, L. and Seo, M. (2023). _Knowledge Unlearning for Mitigating Privacy Risks in Language Models_. [online] 1, pp.14389–14408. Available at: <https://aclanthology.org/2023.acl-long.805.pdf>.
+[^5]: Jang, J., Yoon, D., Yang, S., Cha, S., Lee, M., Logeswaran, L. and Seo, M. (2023). _Knowledge Unlearning for Mitigating Privacy Risks in Language Models_. [online] 1, pp.14389–14408. Available at: <https://aclanthology.org/2023.acl-long.805.pdf>.
 
 [^6]: Ronen, E. and Russinovich, M. (2023). Who’s Harry Potter? Approximate Unlearning in LLMs. [online] arXiv.org. Available at: <https://arxiv.org/abs/2310.02238> [Accessed 7 July 2026].
 

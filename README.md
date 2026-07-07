@@ -21,7 +21,7 @@ Based on the literature, I can expect:
 ## Scope
 
 1. Evaluate the performance of a pre-trained model as a baseline
-2. Fine-tune a pre-trained model on data it should forget ( $\mathcal{D}_{ft} = \mathcal{D}_{retain} \cup \mathcal{D}_{forget}$ , where $\mathcal{D}{forget}$ is the set of examples to be erased and $\mathcal{D}_{retain}$ is what the model should preserve)
+2. Fine-tune a pre-trained model on data it should forget ( $`\mathcal{D}_{ft} = \mathcal{D}_{retain} \cup \mathcal{D}_{forget}`$ , where $`\mathcal{D}{forget}`$ is the set of examples to be erased and $`\mathcal{D}_{retain}`$ is what the model should preserve)
 
     - Gradient descent, all weights > ✅ `Done`
 3. Evaluate
